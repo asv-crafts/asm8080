@@ -1,0 +1,28 @@
+# Build artifacts
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.exe
+i8080asm
+
+# Editor / OS noise
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# JetBrains / IntelliJ IDEs (CLion, IDEA, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+cmake-build-*/
+
+# VS Code
+.vscode/
+
+# Misc
+*.log
