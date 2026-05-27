@@ -17,7 +17,10 @@ using std::map;
 using std::list;
 using std::FILE;
 
-const static char *directives[] = { "INCLUDE", "" };
+#define DIR_INCLUDE 0
+#define DIR_LINK    1
+
+const static char *directives[] = { "INCLUDE", "LINK", "" };
 
 Preprocessor::Preprocessor(string primarySource, i8080asm *sourceCompiler,
 		FileBinarizer *dataBinarizer)
@@ -131,11 +134,6 @@ bool Preprocessor::preprocessLine(const char *line)
 		return false;
 	}
 
-	if (0 != directiveCode) {
-		reportError("Internal error. Unimplememted preprocessor directive");
-		return false;
-	}
-
 	cPos = overSpaces(mPos);
 
 	parseCode = parseString(cPos, &mPos, false, &includeName, NULL);
@@ -145,13 +143,23 @@ bool Preprocessor::preprocessLine(const char *line)
 		return false;
 	}
 
-	sourceBackup = currentSource;
+	switch (directiveCode) {
 
-	result = preprocessFile(includeName.getContent());
+		case DIR_INCLUDE:
+			sourceBackup = currentSource;
+			result = preprocessFile(includeName.getContent());
+			currentSource = sourceBackup;
+			return result;
 
-	currentSource = sourceBackup;
+		case DIR_LINK:
+			result = compiler->linkBinary(includeName.getContent().c_str());
+			if (false == result)
+				reportError(compiler->getErrorMessage());
+			return result;
+	}
 
-	return result;
+	reportError("Internal error. Unimplememted preprocessor directive");
+	return false;
 }
 
 void Preprocessor::reportError(string message)

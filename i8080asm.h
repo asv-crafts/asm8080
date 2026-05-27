@@ -32,6 +32,7 @@ public:
 	void setPassNumber(unsigned int pass);
 	void setAddress(unsigned int newAddress);
 	bool compileLine(const char *sourceLine);
+	bool linkBinary(const char *filename);
 	bool dumpDebugInfo(const char *hintsFilename);
 	bool isCompleted() { return compileCompleted; }
 	unsigned int getOrigin() { return originAddress; }

@@ -1386,6 +1386,54 @@ bool i8080asm::processOrg(unsigned int orgAddr)
 	return true;
 }
 
+bool i8080asm::linkBinary(const char *filename)
+{
+	FILE *binFile = fopen(filename, "rb");
+	if (NULL == binFile) {
+		errorMessage = string("Cannot open binary file ") +
+				string(filename) + string(": ") +
+				string(strerror(errno));
+		return false;
+	}
+
+	if (0 != fseek(binFile, 0, SEEK_END)) {
+		errorMessage = string("Cannot seek in binary file ") +
+				string(filename);
+		fclose(binFile);
+		return false;
+	}
+
+	long binLength = ftell(binFile);
+	if (binLength < 0) {
+		errorMessage = string("Cannot determine size of binary file ") +
+				string(filename);
+		fclose(binFile);
+		return false;
+	}
+	rewind(binFile);
+
+	if (passNumber > 1) {
+		unsigned char byteBuf;
+		for (long i = 0; i < binLength; i++) {
+			if (1 != fread(&byteBuf, 1, 1, binFile)) {
+				errorMessage = string("Read error from binary file ") +
+						string(filename);
+				fclose(binFile);
+				return false;
+			}
+			_binarizer->putByte(byteBuf);
+		}
+	} else {
+		binarySize += (unsigned int)binLength;
+	}
+
+	currentAddress += (unsigned int)binLength;
+	originDefined = true;
+
+	fclose(binFile);
+	return true;
+}
+
 bool i8080asm::compileDb(const char *data, const char **newPos)
 {
 	const char *cPos = data;
@@ -1394,9 +1442,9 @@ bool i8080asm::compileDb(const char *data, const char **newPos)
 	while (true) {
 		if ('"' == *cPos) {
 			// quoted string //
-					
+
 			// cPos will be positioned after final quote character //
-			if (false == compileDbString(data, &vePos))
+			if (false == compileDbString(cPos, &vePos))
 				return false;
 
 		} else {
