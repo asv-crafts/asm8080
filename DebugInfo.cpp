@@ -10,6 +10,14 @@
 #include <map>
 #include "DebugInfo.h"
 
+static string toUpper(const string &s)
+{
+	string result(s);
+	for (string::size_type i = 0; i < result.size(); i++)
+		result[i] = toupper((unsigned char) result[i]);
+	return result;
+}
+
 DebugInfo::DebugInfo()
 :bpNo(0)
 {
@@ -100,7 +108,7 @@ bool DebugInfo::loadInfo(const char *filename)
 		if (0 != labelName.length()) {
 			if (labels.find(labelAddress) == labels.end())
 				labels[labelAddress] = labelName;
-			labelAddresses[labelName] = labelAddress;
+			labelAddresses[toUpper(labelName)] = labelAddress;
 		}
 
 		if (0 != comment.length()) {
@@ -190,7 +198,7 @@ bool DebugInfo::storeInfo(const char *hintsFilename)
 void DebugInfo::addLabel(string labelName, unsigned int address)
 {
 	labels[address] = labelName;
-	labelAddresses[labelName] = address;
+	labelAddresses[toUpper(labelName)] = address;
 }
 
 void DebugInfo::addLeftComment(string text, unsigned int address)
@@ -241,7 +249,7 @@ bool DebugInfo::addBreakPoint(string labelName)
 {
 	map<string, unsigned int>::iterator labelItr;
 
-	labelItr = labelAddresses.find(labelName);
+	labelItr = labelAddresses.find(toUpper(labelName));
 	if (labelItr == labelAddresses.end())
 		return false;
 
@@ -254,7 +262,7 @@ bool DebugInfo::getLabelAddress(string labelName, unsigned int *outAddr)
 {
 	map<string, unsigned int>::iterator labelItr;
 
-	labelItr = labelAddresses.find(labelName);
+	labelItr = labelAddresses.find(toUpper(labelName));
 	if (labelItr == labelAddresses.end())
 		return false;
 
