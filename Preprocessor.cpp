@@ -2,7 +2,9 @@
 #include <string>
 #include <map>
 #include <list>
+#include <algorithm>
 #include <stdio.h>
+#include <string.h>
 #include "Binarizer.h"
 #include "FileBinarizer.h"
 #include "StringBinarizer.h"

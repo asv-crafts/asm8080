@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
+#include <string.h>
 #include <string>
 #include <map>
 #include "Binarizer.h"

@@ -3,6 +3,9 @@
 #define COMMENTS_COLUMN 40
 
 #include "errno.h"
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include <string>
 #include <map>
 #include "DebugInfo.h"
