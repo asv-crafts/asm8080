@@ -25,6 +25,8 @@ private:
 
 	unsigned int originAddress;
 	unsigned int binarySize;
+	unsigned short checksum;
+	unsigned char lastByte;
 };
 
 #define INITIAl_STATE    0

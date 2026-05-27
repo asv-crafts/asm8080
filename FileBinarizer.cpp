@@ -12,6 +12,8 @@ FileBinarizer::FileBinarizer(string target)
 	binaryFilename = target;
 	binaryFile = NULL;
 	binarizerState = INITIAl_STATE;
+	checksum = 0;
+	lastByte = 0;
 }
 
 bool FileBinarizer::putByte(unsigned char data)
@@ -45,6 +47,8 @@ bool FileBinarizer::putByte(unsigned char data)
 				return false;
 
 		case PROCESSING_STATE:
+			checksum += lastByte;
+			lastByte = data;
 			return _putByte(data);
 		break;
 
@@ -71,10 +75,9 @@ bool FileBinarizer::_putByte(unsigned char data)
 FileBinarizer::~FileBinarizer()
 {
 	if (NULL != binaryFile) {
-		// FIXME: need a real checksum //
-		_putByte(0);
-		_putByte(0);
+		checksum = ((checksum + lastByte) & 0xff) + (checksum & 0xff00) + (checksum << 8);
+		_putByte((unsigned char) (checksum & 0xff));
+		_putByte((unsigned char) (checksum >> 8));
 		fclose(binaryFile);
 	}
 }
-
