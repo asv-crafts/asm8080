@@ -38,6 +38,7 @@ public:
 
 private:
 	map<unsigned int, string> labels;
+	map<string, unsigned int> labelAddresses;
 	map<unsigned int, string> leftComments;
 	map<unsigned int, string> rightComments;
 	set<unsigned int> breakPoints;

@@ -97,6 +97,7 @@ bool DebugInfo::loadInfo(const char *filename)
 		if (0 != labelName.length()) {
 			if (labels.find(labelAddress) == labels.end())
 				labels[labelAddress] = labelName;
+			labelAddresses[labelName] = labelAddress;
 		}
 
 		if (0 != comment.length()) {
@@ -186,6 +187,7 @@ bool DebugInfo::storeInfo(const char *hintsFilename)
 void DebugInfo::addLabel(string labelName, unsigned int address)
 {
 	labels[address] = labelName;
+	labelAddresses[labelName] = address;
 }
 
 void DebugInfo::addLeftComment(string text, unsigned int address)
@@ -234,38 +236,28 @@ string DebugInfo::getCommentText(unsigned int address)
 
 bool DebugInfo::addBreakPoint(string labelName)
 {
-	map<unsigned int, string>::iterator labelItr;
+	map<string, unsigned int>::iterator labelItr;
 
-	labelItr = labels.begin();
-	while ((labelItr != labels.end()) &&
-				(labelName != (*labelItr).second))
-		   labelItr++;
+	labelItr = labelAddresses.find(labelName);
+	if (labelItr == labelAddresses.end())
+		return false;
 
-	if (labelItr != labels.end()) {
-		breakPoints.insert((*labelItr).first);
-		bpNo++;
-		return true;
-	}
-
-	return false;
+	breakPoints.insert((*labelItr).second);
+	bpNo++;
+	return true;
 }
 
 bool DebugInfo::getLabelAddress(string labelName, unsigned int *outAddr)
 {
-	map<unsigned int, string>::iterator labelItr;
+	map<string, unsigned int>::iterator labelItr;
 
-	labelItr = labels.begin();
-	while ((labelItr != labels.end()) &&
-				(labelName != (*labelItr).second))
-		   labelItr++;
+	labelItr = labelAddresses.find(labelName);
+	if (labelItr == labelAddresses.end())
+		return false;
 
-	if (labelItr != labels.end()) {
-		if (NULL != outAddr)
-			*outAddr = (*labelItr).first;
-		return true;
-	}
-
-	return false;
+	if (NULL != outAddr)
+		*outAddr = (*labelItr).second;
+	return true;
 }
 
 void DebugInfo::removeBreakPoint(unsigned int address)
